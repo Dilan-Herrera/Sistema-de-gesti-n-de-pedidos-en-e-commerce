@@ -1,6 +1,10 @@
 import pika
+import json
 
-mensaje = "Hola, este es un mensaje inicial."
+pedido = {
+    "id": "PED001",
+    "cliente": "Juan Pérez"
+}
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
@@ -10,8 +14,9 @@ channel.exchange_declare(exchange='pedidos.direct', exchange_type='direct', dura
 channel.basic_publish(
     exchange='pedidos.direct',
     routing_key='pedido.crear',
-    body=mensaje.encode()
+    body=json.dumps(pedido),
+    properties=pika.BasicProperties(content_type='application/json')
 )
 
-print("Mensaje enviado.")
+print("Pedido enviado.")
 connection.close()
